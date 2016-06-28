@@ -90,4 +90,5 @@ http://www.narccap.ucar.edu/about/aogcms.html
 ## Modeling steps:
 1) Compare World Oceans Atlas to bottom trawl survey.   
 2) Validate regression bottom temperature and surface temperature across datasets (World Oceans Atlas v Pathfinder or NEX)  
-3) Rely on NEX data for projections (based on CMIP5)
+3) Rely on NEX data for projections (based on CMIP5)  
+4) Use shape file with bathymetyry to convert to latitude/longitude (use existing data)
