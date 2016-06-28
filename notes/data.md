@@ -88,6 +88,6 @@ http://www.myroms.org/
 http://www.narccap.ucar.edu/about/aogcms.html
 
 ## Modeling steps:
-1) Compare World Oceans Atlas to bottom trawl survey. 
+1) Compare World Oceans Atlas to bottom trawl survey.   
 2) Validate regression bottom temperature and surface temperature across datasets (World Oceans Atlas v Pathfinder or NEX)
 
