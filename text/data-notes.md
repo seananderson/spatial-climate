@@ -32,7 +32,7 @@ http://www.nodc.noaa.gov/SatelliteData/pathfinder4km/
 1981-2012
 - Official Climate Data Record for SST for NOAA
 - 4km resolution ?
-i- Example statement in a paper:
+- Example statement in a paper:
 In this study, we used AVHRR Pathfinder Version 5.2 (PFV5.2) data, obtained
 from the US National Oceanographic Data Center and GHRSST
 (http://pathfinder.nodc.noaa.gov). The PFV5.2 data are an updated version of
@@ -46,13 +46,13 @@ Casey, K.S., T.B. Brandon, P. Cornillon, and R. Evans (2010). "The Past, Present
 
 ## Group for High Resolution SST (GHRSST)
 https://www.ghrsst.org/
-Some example data sets:
-Operational Sea Surface Temperature and Sea Ice Analysis (OSTIA): SST 0.05
+- Some example data sets:
+- Operational Sea Surface Temperature and Sea Ice Analysis (OSTIA): SST 0.05
 degree (approximately 5km) daily (current only?)
 
 ## NEX (NASA Earth Exchange) Global Daily Downscaled Climate Projections
 https://cds.nccs.nasa.gov/nex-gddp/
-https://nex.nasa.gov/nex/projects/1356/
+- https://nex.nasa.gov/nex/projects/1356/
 - Daily
 - Each of the climate projections includes daily maximum temperature, minimum
 temperature, and precipitation for the periods from 1950 through 2100. The
@@ -70,8 +70,6 @@ Pathways (RCPs).
 - http://cmip-pcmdi.llnl.gov/cmip5/availability.html
 - http://cmip-pcmdi.llnl.gov/index.html
 - https://cran.r-project.org/web/packages/RCMIP5/index.html
-
-
 
 ## Other
 
