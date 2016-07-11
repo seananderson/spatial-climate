@@ -26,6 +26,12 @@ https://www.nodc.noaa.gov/OC5/indprod.html
 - Available for lots of depths: in 102 levels for annual data; 0-5500m
 - Same for the seasonal; only down to 1500m and 57 levels for monthly data (i.e.
 we should be able to get monthly data for depth relevant to rockfish)
+- https://data.noaa.gov/dataset/world-ocean-atlas-2013-ncei-accession-0114815
+- http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/
+- 1985-1994: http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/8594/0.25/woa13_8594_t15an04v2.csv.gz
+- 1995-2004: http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/95A4/0.25/woa13_95A4_t15an04v2.csv.gz
+- 2005-2012: http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/A5B2/0.25/woa13_A5B2_t15an04v2.csv.gz
+
 
 ## NOAA Pathfinder
 http://www.nodc.noaa.gov/SatelliteData/pathfinder4km/
