@@ -4,7 +4,7 @@
 base_url <- "http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/"
 resolution <- "0.25/"
 prefix <- "woa13_"
-decades <- c("8594", "95a4", "A5B2")
+decades <- c("8594", "95A4", "A5B2")
 suffix <- "_t15an04v2.csv.gz" # season 15 (July-September), objectively analyzed 
 dir.create("../data-raw", showWarnings = FALSE)
 
