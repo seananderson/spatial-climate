@@ -45,9 +45,10 @@ out <- lapply(seq_along(decades), function(i) {
   d_output <- dplyr::filter(d_output, 
     longitude >= bounding_long[1] & longitude <= bounding_long[2],
     latitude >= bounding_lat[1] & latitude <= bounding_lat[2])
+  d_output$temperature <- as.numeric(d_output$temperature)
 
   d_output
 })
 
 out <- dplyr::bind_rows(out)
-feather::write_feather(out, "../data-generated/woa.feather")
+saveRDS(out, file = file.path("..", "data-generated", "woa.rds"))
