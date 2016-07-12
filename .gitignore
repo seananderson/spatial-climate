@@ -1,4 +1,3 @@
-
 *.vim
-
 *.gz
+data-raw/*
