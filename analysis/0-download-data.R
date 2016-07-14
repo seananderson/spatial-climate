@@ -11,8 +11,8 @@ dir.create("../data-generated", showWarnings = FALSE)
 depths <- c(seq(0, 100, 5), seq(125, 500, 25), seq(550, 2000, 50), 
   seq(2100, 5500, 100))
 column_names <- c(c("latitude", "longitude"), paste0("d", depths))
-bounding_lat <- sort(c(30, 55))
-bounding_long <- sort(c(-140, -122))
+bounding_lat <- sort(c(25, 55))
+bounding_long <- sort(c(-140, -110))
 
 out <- lapply(seq_along(decades), function(i) {
   file_name <- paste0(prefix, decades[i], suffix)
