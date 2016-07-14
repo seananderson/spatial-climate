@@ -19,3 +19,19 @@ rock_characteristics <- readxl::read_excel(file.path("..", "data-raw",
     "RockfishHaulCatchIndivData2003To2014_20150826Fnl.xlsx"),
   sheet = 2, skip = 8)
 
+rock_characteristics <- rename(rock_characteristics,
+  haul_id = `Haul Identifier`)
+
+names(rock_characteristics) <- tolower(names(rock_characteristics))
+names(rock_characteristics) <- gsub(" ", "_", names(rock_characteristics))
+names(rock_characteristics) <- gsub("\\(", "", names(rock_characteristics))
+names(rock_characteristics) <- gsub("\\)", "", names(rock_characteristics))
+
+rock_characteristics <- left_join(rock_characteristics,
+  fram_characteristics, by = "haul_id")
+
+# number of observations missing bottom temperature:
+sum(is.na(rock_characteristics$temperature_bottom)) %>% message
+
+saveRDS(rock_characteristics, file = file.path("..", "data-generated",
+    "rock-characteristics.rds"))
