@@ -88,7 +88,7 @@ http://regclim.coas.oregonstate.edu/gccv/
 ## Pacific Northwest Dynamically Downscaled Climate Impacts Group WRF model (UW)
 - Overview https://cig.uw.edu/datasets/dynamically-downscaled-hydroclimate-projections-wrf-model/
 - WRF model output hosted here: http://cses.washington.edu/rocinante/WRF/
-- We'd want to use the CCSM3 or ECHAM5 models (ECHAM5 selected as middle of the road scenario), which cover 1970-2070 and use same greenhouse gas scenarios
+- We'd want to use the CCSM3 (20km grid) or ECHAM5 (36km grid) models (ECHAM5 selected as middle of the road scenario), which cover 1970-2070 and use same greenhouse gas scenarios. From Salathe (2010), it seems CCSM3/ECHAM5 just use different downscaling approaches.
 - WRF output is in 6-hour intervals, and at fine scale resolution
 - There's two variables that I think can be useful, (1) SST, and (2) SKINTEMP
 - SKINTEMP is (I think) atmospheric temperature at the surface, at about 2 meters. As a side note, Guillaume Mauger (UW CIG) thought that relative changes in SKINTEMP or surface temp are probably also relevant proxies for average change in SST, which might be useful if we use other SST models?
