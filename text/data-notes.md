@@ -9,6 +9,7 @@ http://thredds.axiomdatascience.com/thredds/dodsC/HYCOM.nc.html
 - Naval Research Laboratory
 - HYCOM provides comparable resolution to satellite based SST and salinity values
 (1/12 degree resolution, or ~7 km spacing on average)
+- 1992 to 2012 historical reconstruction, no future forecasting
 
 ## Connecting surface and bottom temperatures 
 - Maynard et al. 2016 Phil. Trans. R. Soc. <http://rstb.royalsocietypublishing.org/content/371/1689/20150208>, Used:
