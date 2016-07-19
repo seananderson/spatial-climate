@@ -78,11 +78,20 @@ Pathways (RCPs).
 - http://cmip-pcmdi.llnl.gov/cmip5/availability.html
 - http://cmip-pcmdi.llnl.gov/index.html
 - https://cran.r-project.org/web/packages/RCMIP5/index.html
+- from UW CIG, CMIP5 projections are now hosted here: http://cmip-pcmdi.llnl.gov/cmip5/ and http://esgf.llnl.gov/
 
 ## CMIP5 GCCV
 This is a regional climate model implementation of the CMIP5 downscaling. The spatial resolution is on a 15km grid, and projections are either monthly or annually. The projections are done on surface temperature (which I interpret to mean air temp). Projected years are 1968 - 2099. 
 
 http://regclim.coas.oregonstate.edu/gccv/
+
+## Pacific Northwest Dynamically Downscaled Climate Impacts Group WRF model (UW)
+- Overview https://cig.uw.edu/datasets/dynamically-downscaled-hydroclimate-projections-wrf-model/
+- WRF model output hosted here: http://cses.washington.edu/rocinante/WRF/
+- We'd want to use the CCSM3 or ECHAM5 models, which cover 1970-2070 and use same greenhouse gas scenarios
+- WRF output is in 6-hour intervals, and at fine scale resolution
+- There's two variables that I think can be useful, (1) SST, and (2) SKINTEMP
+- SKINTEMP is (I think) atmospheric temperature at the surface, at about 2 meters. As a side note, Guillaume Mauger (UW CIG) thought that relative changes in SKINTEMP or surface temp are probably also relevant proxies for average change in SST, which might be useful if we use other SST models?
 
 ## Other
 
