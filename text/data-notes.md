@@ -70,7 +70,7 @@ Coupled Model Intercomparison Project Phase 5 (CMIP5) and across two of the
 four greenhouse gas emissions scenarios known as Representative Concentration
 Pathways (RCPs).
 - total of 12TB / individual files 750MB
-- I believe this is air temperature at the surface
+- I believe this is air temperature at the surface (EW: and I think it's terrestrial / US only?)
 
 ## CMIP5
 - http://journals.ametsoc.org/doi/abs/10.1175/BAMS-D-11-00094.1
@@ -78,6 +78,11 @@ Pathways (RCPs).
 - http://cmip-pcmdi.llnl.gov/cmip5/availability.html
 - http://cmip-pcmdi.llnl.gov/index.html
 - https://cran.r-project.org/web/packages/RCMIP5/index.html
+
+## CMIP5 GCCV
+This is a regional climate model implementation of the CMIP5 downscaling. The spatial resolution is on a 15km grid, and projections are either monthly or annually. The projections are done on surface temperature (which I interpret to mean air temp). Projected years are 1968 - 2099. 
+
+http://regclim.coas.oregonstate.edu/gccv/
 
 ## Other
 
