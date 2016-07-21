@@ -1,6 +1,10 @@
 # Import example ncdf file from UW CIG model projections
 # and convert WRF model to proper coordinates
 
+# Note: for precise mappign as possible, here's what Eric Salathe recommends: "you’ll get the 
+# best result with Lambert Conformal Conic map centered on -120, 45.6 and Std Par 1 49.55 
+# Std Par 2 41.450, Height 13"
+
 base_url <- "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/"
 library(ncdf4)
 library(RNetCDF)
@@ -8,6 +12,8 @@ library(dplyr)
 library(PBSmapping)
 library(sp)
 library(rgdal)
+library(mgcv)
+
 # Unfortunately ncdf4 doesn't work with URLs, so seems like we have to
 # 1. identify dates w/trawl survey (month / day / year)
 # 2. download only relevant files + process
@@ -45,25 +51,27 @@ dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
 # Read in the longitude latitude that was output from the
 # NCAR IDV viewer. Projection attributes in lambert, with parameters
 # shown in print.nc() command
-fid = open.nc("analysis/lambert_latlon.nc")
-lon_lambert = read.nc(fid)$x
-lat_lambert = read.nc(fid)$y
+#fid = open.nc("analysis/lambert_latlon.nc")
+#lon_lambert = read.nc(fid)$x
+#lat_lambert = read.nc(fid)$y
+#print.nc(fid)
+
+fid = open.nc("analysis/terrain_d02.nc")
 print.nc(fid)
 
 # grid of all possible values
-xy <- expand.grid("X"=lon_lambert, "Y"=lat_lambert)
+xy.ll <- data.frame("X"=c(read.nc(fid)$XLONG), "Y"=c(read.nc(fid)$XLAT))
 
-crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
-p <- SpatialPoints(xy, proj4string=crs)
-xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
-names(xy.ll) = c("X", "Y")
+#crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
+#p <- SpatialPoints(xy, proj4string=crs)
+#xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
+#names(xy.ll) = c("X", "Y")
 xy.ll$sst = c(as.matrix(dat$SST))
 xy.ll$PID = 1
 xy.ll$POS = seq(1,nrow(xy.ll))
 attr(xy.ll, "zone") = 7
 attr(xy.ll, "projection") = "LL"
 xy.utm = convUL(xy.ll)  
-
 
 ### PLOTS 
 data(nepacLL)
@@ -97,30 +105,24 @@ get_wrf = function(this.year, this.month, this.day) {
   dat<-read.nc(fid)
   dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
   
-  # Read in the longitude latitude that was output from the
-  # NCAR IDV viewer. Projection attributes in lambert, with parameters
-  # shown in print.nc() command
-  fid = open.nc("analysis/lambert_latlon.nc")
-  lon_lambert = read.nc(fid)$x
-  lat_lambert = read.nc(fid)$y
+  fid = open.nc("analysis/terrain_d02.nc")
   print.nc(fid)
   
   # grid of all possible values
-  xy <- expand.grid("X"=lon_lambert, "Y"=lat_lambert)
+  xy.ll <- data.frame("X"=c(read.nc(fid)$XLONG), "Y"=c(read.nc(fid)$XLAT))
   
-  crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
-  p <- SpatialPoints(xy, proj4string=crs)
-  xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
-  names(xy.ll) = c("X", "Y")
+  #crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
+  #p <- SpatialPoints(xy, proj4string=crs)
+  #xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
+  #names(xy.ll) = c("X", "Y")
   xy.ll$sst = c(as.matrix(dat$SST))
   xy.ll$PID = 1
   xy.ll$POS = seq(1,nrow(xy.ll))
   attr(xy.ll, "zone") = 7
   attr(xy.ll, "projection") = "LL"
-  xy.utm = convUL(xy.ll)
+  xy.utm = convUL(xy.ll)  
   return(list("UTM"=xy.utm, "SST"=dat$SST))
 }
-
 
 ####################
 # Interpolate SST at trawl data locations for 2003 -- create model to validate bottom temp - SST relationship
@@ -129,7 +131,6 @@ attr(nepacLL, "zone")=7
 nepacUTM = convUL(nepacLL)
 
 trawlDat$sst = NA
-library(mgcv)
 
 # Cycle over unique month-day combinations
 for(i in 1:length(trawl.month[trawl.year==this.year])) {
