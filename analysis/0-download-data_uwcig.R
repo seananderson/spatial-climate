@@ -14,14 +14,21 @@ library(rgdal)
 
 # Pull in trawl data to identify unique dates
 trawlDat = read.csv("/users/eric.ward/dropbox/data for sean/_Eulachon Biomass w substrate bathymetry temperature DATA 2003 - 2012.csv")
+trawlDat$month = substr(trawlDat$Trawl_date, 5, 6)
+trawlDat$day = substr(trawlDat$Trawl_date, 7, 8)
 trawlDates = unique(trawlDat$Trawl_date)
 trawl.year = substr(trawlDates, 1, 4)
 trawl.month = substr(trawlDates, 5, 6)
 trawl.day = substr(trawlDates, 7, 8)
+trawlDat$X = trawlDat$Lon_mid
+trawlDat$Y = trawlDat$Lat_mid
+trawlDat$PID = 1
+trawlDat$POS = seq(1,nrow(trawlDat))
+attr(trawlDat,"zone")=7
+attr(trawlDat,"projection")="LL"
+trawlDat = convUL(trawlDat)
 
 # Start with just one year for simplicity -- 2003
-# download 
-
 this.year = 2003
 this.month = trawl.month[trawl.year==this.year][1]
 this.day = trawl.day[trawl.year==this.year][1]
@@ -76,3 +83,71 @@ points(xy.ll$lon, xy.ll$lat, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColo
 #for(i in 1:length(unique(nepacLL$PID))) {
 #  polygon(x = nepacLL$X[nepacLL$PID == unique(nepacLL$PID)[i]], y = nepacLL$Y[nepacLL$PID == unique(nepacLL$PID)[i]])
 #}
+
+### Now we can try to match up temp interpolation for 2003 trawl data
+
+get_wrf = function(this.year, this.month, this.day) {
+  file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
+  fileName <- paste0(base_url, file.desc)
+  localName = paste0("/users/eric.ward/downloads/",file.desc)
+  download.file(url=fileName, destfile=localName)
+  
+  # load with RNetCDF function
+  fid<-open.nc(localName)
+  dat<-read.nc(fid)
+  dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
+  
+  # Read in the longitude latitude that was output from the
+  # NCAR IDV viewer. Projection attributes in lambert, with parameters
+  # shown in print.nc() command
+  fid = open.nc("analysis/lambert_latlon.nc")
+  lon_lambert = read.nc(fid)$x
+  lat_lambert = read.nc(fid)$y
+  print.nc(fid)
+  
+  # grid of all possible values
+  xy <- expand.grid("X"=lon_lambert, "Y"=lat_lambert)
+  
+  crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
+  p <- SpatialPoints(xy, proj4string=crs)
+  xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
+  names(xy.ll) = c("X", "Y")
+  xy.ll$sst = c(as.matrix(dat$SST))
+  xy.ll$PID = 1
+  xy.ll$POS = seq(1,nrow(xy.ll))
+  attr(xy.ll, "zone") = 7
+  attr(xy.ll, "projection") = "LL"
+  xy.utm = convUL(xy.ll)
+  return(list("UTM"=xy.utm, "SST"=dat$SST))
+}
+
+
+####################
+# Interpolate SST at trawl data locations for 2003 -- create model to validate bottom temp - SST relationship
+####################
+attr(nepacLL, "zone")=7
+nepacUTM = convUL(nepacLL)
+
+trawlDat$sst = NA
+library(mgcv)
+
+# Cycle over unique month-day combinations
+for(i in 1:length(trawl.month[trawl.year==this.year])) {
+
+g = get_wrf(2003, trawl.month[trawl.year==this.year][i], trawl.day[trawl.year==this.year][i])
+# get rid of points on land
+if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
+g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
+
+# use simple 2D gam to do interpolation -- probably worth also looking into interp()
+gam.fit = gam(sst ~ s(X, Y), data = g$UTM) # possibly include month here?
+predict.loc = which(trawlDat$Year==2003 & trawlDat$month==trawl.month[trawl.year==this.year][i] & trawlDat$day==trawl.day[trawl.year==this.year][i])
+trawlDat$sst[predict.loc] = predict(gam.fit, newdata=trawlDat[predict.loc,])
+
+}
+
+# In ideal world we wouldn't have this spatial component in here -- all variation would be explained by sst and 
+# depth. Inclusion of the spatial part makes predicted:obs relationship better
+predicted.bottom_temp = gam(G.temp.all ~ sst + (month) + s(SRTM_depth_m), data=trawlDat[trawlDat$Year==2003,])
+plot(predicted.bottom_temp$fitted.values, trawlDat$G.temp.all[trawlDat$Year==2003], xlab="Predicted", ylab="Observed")
+abline(0,1, lwd=3, col="red")
