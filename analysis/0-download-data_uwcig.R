@@ -54,3 +54,10 @@ plotMap(nepacLL, xlim=c(-140, -100), ylim=c(36, 55))
 points(ll.grid$X, ll.grid$Y, cex=0.1, col="red")
 # add trawl data
 points(trawlDat$Lon_mid, trawlDat$Lat_mid, cex=0.1, col="blue")
+
+# Added the image plot of SST -- seems to confirm that projection isn't quite right
+plotMap(nepacLL, xlim=c(-140, -100), ylim=c(36, 55))
+image(ll.grid$X[xydata$Y == min(xydata$Y)], ll.grid$Y[xydata$X == min(xydata$X)], as.matrix(dat$SST), add=T)
+for(i in 1:length(unique(nepacLL$PID))) {
+  polygon(x = nepacLL$X[nepacLL$PID == unique(nepacLL$PID)[i]], y = nepacLL$Y[nepacLL$PID == unique(nepacLL$PID)[i]])
+}
