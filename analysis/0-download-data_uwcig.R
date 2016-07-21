@@ -36,28 +36,34 @@ dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
 CEN_LAT = 5058170.29# 45.6427993774414
 CEN_LON = 281932.21 #-119.798309326172
 
-colnames(dat$SST) = CEN_LAT + seq(-61,61)*12000
-rownames(dat$SST) = CEN_LON + seq(-81,80)*12000
+# Read in the longitude latitude that was output from the
+# NCAR IDV viewer. Projection attributes in lambert, with parameters
+# shown in print.nc() command
+fid = open.nc("analysis/lambert_latlon.nc")
+lon_lambert = read.nc(fid)$x
+lat_lambert = read.nc(fid)$y
+print.nc(fid)
 
-xydata = expand.grid("X"=as.numeric(rownames(dat$SST)), "Y"=as.numeric(colnames(dat$SST)))
-xydata$PID = 1
-xydata$POS = seq(1,nrow(xydata))
-attr(xydata, "zone") = 11
-attr(xydata, "projection") = "UTM"
-
-# convert grid to lat - lon
-ll.grid = convUL(xydata, km=FALSE)
-
+# convert 
+xy <- expand.grid("X"=lon_lambert, "Y"=lat_lambert)
+library(sp)
+library(rgdal)
+crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
+p <- SpatialPoints(xy, proj4string=crs)
+xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
+names(xy.ll) = c("lon", "lat")
+xy.ll$sst = c(as.matrix(dat$SST))
+  
 data(nepacLL)
 
-plotMap(nepacLL, xlim=c(-140, -100), ylim=c(36, 55))
-points(ll.grid$X, ll.grid$Y, cex=0.1, col="red")
+plotMap(nepacLL, xlim=c(-135, -105), ylim=c(36, 55))
+points(xy.ll$lon, xy.ll$lat, cex=0.1, col="red")
 # add trawl data
 points(trawlDat$Lon_mid, trawlDat$Lat_mid, cex=0.1, col="blue")
 
-# Added the image plot of SST -- seems to confirm that projection isn't quite right
-plotMap(nepacLL, xlim=c(-140, -100), ylim=c(36, 55))
-image(ll.grid$X[xydata$Y == min(xydata$Y)], ll.grid$Y[xydata$X == min(xydata$X)], as.matrix(dat$SST), add=T)
+# Getting closer on projections
+plotMap(nepacLL, xlim=c(-135, -105), ylim=c(36, 55))
+image(xy.ll$lon[xy$Y == min(xy$Y)], xy.ll$lat[xy$X == min(xy$X)], as.matrix(dat$SST), add=T)
 for(i in 1:length(unique(nepacLL$PID))) {
   polygon(x = nepacLL$X[nepacLL$PID == unique(nepacLL$PID)[i]], y = nepacLL$Y[nepacLL$PID == unique(nepacLL$PID)[i]])
 }
