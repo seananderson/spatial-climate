@@ -93,7 +93,7 @@ http://regclim.coas.oregonstate.edu/gccv/
 - There's two variables that I think can be useful, (1) SST, and (2) SKINTEMP
 - SKINTEMP is (I think) atmospheric temperature at the surface, at about 2 meters. As a side note, Guillaume Mauger (UW CIG) thought that relative changes in SKINTEMP or surface temp are probably also relevant proxies for average change in SST, which might be useful if we use other SST models?
 - More details: the print.nc() function is extremely valuable for these files. Key info: SST is presented in Kelvins, grid center + dimensions included, etc.
-
+- Also there's a few tools for visualizing these WRF output files ( netcdf format ): Panoply, http://www.giss.nasa.gov/tools/panoply/ or IDV (NCAR)
 
 ## Other
 
