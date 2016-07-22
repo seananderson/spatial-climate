@@ -149,6 +149,7 @@ trawlDat$sst[predict.loc] = diag(interp(g$UTM$X, g$UTM$Y, g$UTM$sst, xo = trawlD
 }
 
 # Look at pred vs obs -- pretty good fit
-predicted.bottom_temp = lm(G.temp.all ~ sst + as.numeric(month) +I(as.numeric(month)^2) + SRTM_depth_m + I(SRTM_depth_m^2), data=trawlDat[trawlDat$Year==2003,])
-plot(predicted.bottom_temp$fitted.values, predicted.bottom_temp$fitted.values + predicted.bottom_temp$residuals, xlab="Predicted", ylab="Observed")
+predicted.bottom_temp = lm(log(G.temp.all) ~ log(sst) + as.numeric(month) +I(as.numeric(month)^2) + SRTM_depth_m + I(SRTM_depth_m^2), data=trawlDat[trawlDat$Year==2003,])
+plot(exp(predicted.bottom_temp$fitted.values), exp(predicted.bottom_temp$fitted.values + predicted.bottom_temp$residuals), xlab="Predicted", ylab="Observed")
 abline(0,1, lwd=3, col="red")
+
