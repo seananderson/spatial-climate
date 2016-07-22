@@ -6,13 +6,13 @@
 # Std Par 2 41.450, Height 13"
 
 base_url <- "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/"
-library(ncdf4)
 library(RNetCDF)
 library(dplyr)
 library(PBSmapping)
 library(sp)
 library(rgdal)
 library(mgcv)
+library(akima)
 
 # Unfortunately ncdf4 doesn't work with URLs, so seems like we have to
 # 1. identify dates w/trawl survey (month / day / year)
@@ -137,18 +137,18 @@ for(i in 1:length(trawl.month[trawl.year==this.year])) {
 
 g = get_wrf(2003, trawl.month[trawl.year==this.year][i], trawl.day[trawl.year==this.year][i])
 # get rid of points on land
-if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
-g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
+#if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
+#g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
 
 # use simple 2D gam to do interpolation -- probably worth also looking into interp()
-gam.fit = gam(sst ~ s(X, Y), data = g$UTM) # possibly include month here?
+#gam.fit = gam(sst ~ s(X, Y), data = g$UTM) 
 predict.loc = which(trawlDat$Year==2003 & trawlDat$month==trawl.month[trawl.year==this.year][i] & trawlDat$day==trawl.day[trawl.year==this.year][i])
-trawlDat$sst[predict.loc] = predict(gam.fit, newdata=trawlDat[predict.loc,])
+#trawlDat$sst[predict.loc] = predict(gam.fit, newdata=trawlDat[predict.loc,])
 
+trawlDat$sst[predict.loc] = diag(interp(g$UTM$X, g$UTM$Y, g$UTM$sst, xo = trawlDat$X[predict.loc], yo = trawlDat$Y[predict.loc])$z)
 }
 
-# In ideal world we wouldn't have this spatial component in here -- all variation would be explained by sst and 
-# depth. Inclusion of the spatial part makes predicted:obs relationship better
-predicted.bottom_temp = gam(G.temp.all ~ sst + (month) + s(SRTM_depth_m), data=trawlDat[trawlDat$Year==2003,])
-plot(predicted.bottom_temp$fitted.values, trawlDat$G.temp.all[trawlDat$Year==2003], xlab="Predicted", ylab="Observed")
+# Look at pred vs obs -- pretty good fit
+predicted.bottom_temp = lm(G.temp.all ~ sst + as.numeric(month) +I(as.numeric(month)^2) + SRTM_depth_m + I(SRTM_depth_m^2), data=trawlDat[trawlDat$Year==2003,])
+plot(predicted.bottom_temp$fitted.values, predicted.bottom_temp$fitted.values + predicted.bottom_temp$residuals, xlab="Predicted", ylab="Observed")
 abline(0,1, lwd=3, col="red")
