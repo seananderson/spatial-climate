@@ -1,5 +1,7 @@
 # Download data from World Oceans Atlas
 # URL http://data.nodc.noaa.gov/woa/WOA13/
+# http://data.nodc.noaa.gov/woa/WOA13/DOC/woa13_vol1.pdf
+# http://www.nodc.noaa.gov/OC5/SELECT/dbsearch/dbsearch.html
 
 base_url <- "http://data.nodc.noaa.gov/woa/WOA13/DATAv2/temperature/csv/"
 resolution <- "0.25/"
