@@ -14,12 +14,20 @@ library(rgdal)
 library(mgcv)
 library(akima)
 
+# Create empty data folders if needed:
+dir.create(file.path("..", "data-raw", "wrf"), showWarnings = FALSE)
+sapply(1970:2069, function(x) {
+  dir.create(file.path("..", "data-raw", "wrf", x), showWarnings = FALSE)
+})
+
 # Unfortunately ncdf4 doesn't work with URLs, so seems like we have to
 # 1. identify dates w/trawl survey (month / day / year)
 # 2. download only relevant files + process
 
 # Pull in trawl data to identify unique dates
-trawlDat = read.csv("/users/eric.ward/dropbox/data for sean/_Eulachon Biomass w substrate bathymetry temperature DATA 2003 - 2012.csv")
+trawlDat = read.csv(paste0("/Users/", Sys.info()[["user"]], 
+    "/Dropbox/data for sean/_Eulachon Biomass w substrate bathymetry ",
+    "temperature DATA 2003 - 2012.csv"))
 trawlDat$month = substr(trawlDat$Trawl_date, 5, 6)
 trawlDat$day = substr(trawlDat$Trawl_date, 7, 8)
 trawlDates = unique(trawlDat$Trawl_date)
@@ -40,7 +48,7 @@ this.month = trawl.month[trawl.year==this.year][1]
 this.day = trawl.day[trawl.year==this.year][1]
 file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
 fileName <- paste0(base_url, file.desc)
-localName = paste0("/users/eric.ward/downloads/",file.desc)
+localName = file.path("..", "data-raw", file.desc)
 download.file(url=fileName, destfile=localName)
 
 # load with RNetCDF function
@@ -56,7 +64,7 @@ dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
 #lat_lambert = read.nc(fid)$y
 #print.nc(fid)
 
-fid = open.nc("analysis/terrain_d02.nc")
+fid = open.nc("terrain_d02.nc")
 print.nc(fid)
 
 # grid of all possible values
@@ -97,7 +105,7 @@ points(xy.ll$lon, xy.ll$lat, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColo
 get_wrf = function(this.year, this.month, this.day) {
   file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
   fileName <- paste0(base_url, file.desc)
-  localName = paste0("/users/eric.ward/downloads/",file.desc)
+  localName = paste0("../data-raw/",file.desc)
   download.file(url=fileName, destfile=localName)
   
   # load with RNetCDF function
@@ -105,7 +113,7 @@ get_wrf = function(this.year, this.month, this.day) {
   dat<-read.nc(fid)
   dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
   
-  fid = open.nc("analysis/terrain_d02.nc")
+  fid = open.nc("terrain_d02.nc")
   print.nc(fid)
   
   # grid of all possible values
