@@ -1,5 +1,5 @@
 library(dplyr)
-fram_characteristics <- readr::read_csv(file.path("..", "data-raw", 
+fram_characteristics <- readr::read_csv(file.path("data-raw", 
     "fram-characteristics.csv"))
 names(fram_characteristics) <- tolower(names(fram_characteristics))
 names(fram_characteristics) <- gsub(" ", "_", names(fram_characteristics))
@@ -15,7 +15,7 @@ fram_characteristics <- select(fram_characteristics,
       temperature_surface = as.numeric(temperature_surface),
       floor_depth = as.numeric(floor_depth))
 
-rock_characteristics <- readxl::read_excel(file.path("..", "data-raw",
+rock_characteristics <- readxl::read_excel(file.path("data-raw",
     "RockfishHaulCatchIndivData2003To2014_20150826Fnl.xlsx"),
   sheet = 2, skip = 8)
 
@@ -33,5 +33,5 @@ rock_characteristics <- left_join(rock_characteristics,
 # number of observations missing bottom temperature:
 sum(is.na(rock_characteristics$temperature_bottom)) %>% message
 
-saveRDS(rock_characteristics, file = file.path("..", "data-generated",
+saveRDS(rock_characteristics, file = file.path("data-generated",
     "rock-characteristics.rds"))
