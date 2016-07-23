@@ -25,30 +25,29 @@ sapply(1970:2069, function(x) {
 # 2. download only relevant files + process
 
 # Pull in trawl data to identify unique dates
-trawlDat = read.csv(paste0("/Users/", Sys.info()[["user"]], 
-    "/Dropbox/data for sean/_Eulachon Biomass w substrate bathymetry ",
-    "temperature DATA 2003 - 2012.csv"))
-trawlDat$month = substr(trawlDat$Trawl_date, 5, 6)
-trawlDat$day = substr(trawlDat$Trawl_date, 7, 8)
-trawlDates = unique(trawlDat$Trawl_date)
+trawlDat <- readRDS("data-generated/rock-characteristics.rds")
+trawlDat$month = substr(trawlDat$trawl_date, 6, 7)
+trawlDat$year = substr(trawlDat$trawl_date, 1, 4)
+trawlDat$day = substr(trawlDat$trawl_date, 9, 10)
+trawlDates = unique(trawlDat$trawl_date)
 trawl.year = substr(trawlDates, 1, 4)
-trawl.month = substr(trawlDates, 5, 6)
-trawl.day = substr(trawlDates, 7, 8)
-trawlDat$X = trawlDat$Lon_mid
-trawlDat$Y = trawlDat$Lat_mid
+trawl.month = substr(trawlDates, 6, 7)
+trawl.day = substr(trawlDates, 9, 10)
+trawlDat$X = trawlDat$haul_longitude_decimal_degrees
+trawlDat$Y = trawlDat$haul_latitude_decimal_degrees
 trawlDat$PID = 1
 trawlDat$POS = seq(1,nrow(trawlDat))
 attr(trawlDat,"zone")=7
 attr(trawlDat,"projection")="LL"
 trawlDat = convUL(trawlDat)
-
 # Start with just one year for simplicity -- 2003
 this.year = 2003
-this.month = "07"#trawl.month[trawl.year==this.year][1]
-this.day = "01"#trawl.day[trawl.year==this.year][1]
-file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
+this.month = trawl.month[trawl.year==this.year][1]
+this.day = trawl.day[trawl.year==this.year][1]
+file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",
+  this.month,"-",this.day,"_12:00:00")
 fileName <- paste0(base_url, file.desc)
-localName = file.path("data-raw", file.desc)
+localName = file.path("data-raw", "wrf", file.desc)
 download.file(url=fileName, destfile=localName)
 
 # load with RNetCDF function
@@ -64,7 +63,7 @@ dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
 #lat_lambert = read.nc(fid)$y
 #print.nc(fid)
 
-fid = open.nc("terrain_d02.nc")
+fid = open.nc("data-raw/terrain_d02.nc")
 print.nc(fid)
 
 # grid of all possible values
@@ -105,15 +104,17 @@ points(xy.ll$lon, xy.ll$lat, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColo
 get_wrf = function(this.year, this.month, this.day) {
   file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
   fileName <- paste0(base_url, file.desc)
-  localName = paste0("data-raw/",file.desc)
-  download.file(url=fileName, destfile=localName)
+  localName = paste0("data-raw/", "wrf/", file.desc)
+  if (!file.exists(localName)) {
+    download.file(url=fileName, destfile=localName)
+  }
   
   # load with RNetCDF function
   fid<-open.nc(localName)
   dat<-read.nc(fid)
   dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
   
-  fid = open.nc("terrain_d02.nc")
+  fid = open.nc("data-raw/terrain_d02.nc")
   print.nc(fid)
   
   # grid of all possible values
@@ -142,18 +143,21 @@ trawlDat$sst = NA
 
 # Cycle over unique month-day combinations
 for(i in 1:length(trawl.month[trawl.year==this.year])) {
-
-g = get_wrf(2003, trawl.month[trawl.year==this.year][i], trawl.day[trawl.year==this.year][i])
-# get rid of points on land
-#if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
-#g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
-
-# use simple 2D gam to do interpolation -- probably worth also looking into interp()
-#gam.fit = gam(sst ~ s(X, Y), data = g$UTM) 
-predict.loc = which(trawlDat$Year==2003 & trawlDat$month==trawl.month[trawl.year==this.year][i] & trawlDat$day==trawl.day[trawl.year==this.year][i])
-#trawlDat$sst[predict.loc] = predict(gam.fit, newdata=trawlDat[predict.loc,])
-
-trawlDat$sst[predict.loc] = diag(interp(g$UTM$X, g$UTM$Y, g$UTM$sst, xo = trawlDat$X[predict.loc], yo = trawlDat$Y[predict.loc])$z)
+  
+  g = get_wrf(2003, trawl.month[trawl.year==this.year][i], trawl.day[trawl.year==this.year][i])
+  # get rid of points on land
+  #if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
+  #g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
+  
+  # use simple 2D gam to do interpolation -- probably worth also looking into interp()
+  #gam.fit = gam(sst ~ s(X, Y), data = g$UTM) 
+  predict.loc = which(trawlDat$year==2003 & 
+    trawlDat$month==trawl.month[trawl.year==this.year][i] & 
+    trawlDat$day==trawl.day[trawl.year==this.year][i])
+  #trawlDat$sst[predict.loc] = predict(gam.fit, newdata=trawlDat[predict.loc,])
+  
+  trawlDat$sst[predict.loc] = diag(interp(g$UTM$X, g$UTM$Y, g$UTM$sst, 
+      xo = trawlDat$X[predict.loc], yo = trawlDat$Y[predict.loc])$z)
 }
 
 # Look at pred vs obs -- pretty good fit
