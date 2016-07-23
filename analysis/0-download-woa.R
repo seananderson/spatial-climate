@@ -8,8 +8,8 @@ resolution <- "0.25/"
 prefix <- "woa13_"
 decades <- c("8594", "95A4", "A5B2")
 suffix <- "_t15an04v2.csv.gz" # season 15 (July-September), objectively analyzed 
-dir.create("../data-raw", showWarnings = FALSE)
-dir.create("../data-generated", showWarnings = FALSE)
+dir.create("data-raw", showWarnings = FALSE)
+dir.create("data-generated", showWarnings = FALSE)
 depths <- c(seq(0, 100, 5), seq(125, 500, 25), seq(550, 2000, 50), 
   seq(2100, 5500, 100))
 column_names <- c(c("latitude", "longitude"), paste0("d", depths))
@@ -19,7 +19,7 @@ bounding_long <- sort(c(-140, -110))
 out <- lapply(seq_along(decades), function(i) {
   file_name <- paste0(prefix, decades[i], suffix)
   this_url <- paste0(base_url, decades[i], "/", resolution, file_name)
-  destination <- paste0("../data-raw/", file_name)
+  destination <- paste0("data-raw/", file_name)
 
   if (!file.exists(destination))
     download.file(this_url, destfile = destination)
@@ -53,4 +53,4 @@ out <- lapply(seq_along(decades), function(i) {
 })
 
 out <- dplyr::bind_rows(out)
-saveRDS(out, file = file.path("..", "data-generated", "woa.rds"))
+saveRDS(out, file = file.path("data-generated", "woa.rds"))

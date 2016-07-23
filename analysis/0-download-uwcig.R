@@ -15,9 +15,9 @@ library(mgcv)
 library(akima)
 
 # Create empty data folders if needed:
-dir.create(file.path("..", "data-raw", "wrf"), showWarnings = FALSE)
+dir.create(file.path("data-raw", "wrf"), showWarnings = FALSE)
 sapply(1970:2069, function(x) {
-  dir.create(file.path("..", "data-raw", "wrf", x), showWarnings = FALSE)
+  dir.create(file.path("data-raw", "wrf", x), showWarnings = FALSE)
 })
 
 # Unfortunately ncdf4 doesn't work with URLs, so seems like we have to
@@ -48,7 +48,7 @@ this.month = "07"#trawl.month[trawl.year==this.year][1]
 this.day = "01"#trawl.day[trawl.year==this.year][1]
 file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
 fileName <- paste0(base_url, file.desc)
-localName = file.path("..", "data-raw", file.desc)
+localName = file.path("data-raw", file.desc)
 download.file(url=fileName, destfile=localName)
 
 # load with RNetCDF function
@@ -105,7 +105,7 @@ points(xy.ll$lon, xy.ll$lat, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColo
 get_wrf = function(this.year, this.month, this.day) {
   file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
   fileName <- paste0(base_url, file.desc)
-  localName = paste0("../data-raw/",file.desc)
+  localName = paste0("data-raw/",file.desc)
   download.file(url=fileName, destfile=localName)
   
   # load with RNetCDF function
