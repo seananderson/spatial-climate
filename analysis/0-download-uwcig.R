@@ -44,8 +44,8 @@ trawlDat = convUL(trawlDat)
 
 # Start with just one year for simplicity -- 2003
 this.year = 2003
-this.month = trawl.month[trawl.year==this.year][1]
-this.day = trawl.day[trawl.year==this.year][1]
+this.month = "07"#trawl.month[trawl.year==this.year][1]
+this.day = "01"#trawl.day[trawl.year==this.year][1]
 file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
 fileName <- paste0(base_url, file.desc)
 localName = file.path("..", "data-raw", file.desc)
