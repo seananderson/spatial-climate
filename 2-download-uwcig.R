@@ -107,6 +107,7 @@ get_wrf = function(this.year, this.month, this.day) {
   fileName <- paste0(base_url, file.desc)
   localName = paste0("data-raw/", "wrf/", file.desc)
   if (!file.exists(localName)) {
+    Sys.sleep(2)
     download.file(url=fileName, destfile=localName)
   }
   
