@@ -145,12 +145,11 @@ trawlDat$sst = NA
 # was getting errors with R version, so:
 unique.trawl.year <- unique(trawl.year)
 sapply(unique.trawl.year, function(y) {
-  Sys.sleep(200)
   oldwd <- getwd()
   setwd(paste0("data-raw/wrf/", y))
   system(paste0(
       "wget --user-agent=Mozilla --no-directories ",
-      "--wait=2 --accept='*12:00:00*' -r -l 1 ", 
+      "--wait=0.7 -O --accept='*12:00:00*' -r -l 1 ", 
       "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/", y, "/"))
   setwd(oldwd)
 })
