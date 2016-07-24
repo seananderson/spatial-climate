@@ -85,7 +85,8 @@ data(nepacLL)
 plotMap(nepacLL, xlim=c(-135, -105), ylim=c(36, 55))
 points(xy.ll$X, xy.ll$Y, cex=0.2, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColorValue=25))
 # add trawl data
-points(trawlDat$Lon_mid, trawlDat$Lat_mid, cex=0.1, col=rgb(1,0,0,0.3))
+points(trawlDat$haul_longitude_decimal_degrees,
+  trawlDat$haul_latitude_decimal_degrees, cex=0.1, col=rgb(1,0,0,0.3))
 
 # Plot same map in UTM
 plotMap(convUL(nepacLL), xlim = range(xy.utm$X), ylim = range(xy.utm$Y))
@@ -144,13 +145,13 @@ trawlDat$sst = NA
 # Cycle over unique month-day combinations
 g <- list()
 unique.trawl.year <- unique(trawl.year)
-for(j = seq_along(unique.trawl.year)) {
+for(j in seq_along(unique.trawl.year)) {
   g[[j]] <- list()
-  for(i in 1:length(trawl.month[trawl.year==unique.this.year[j]])) {
+  for(i in 1:length(trawl.month[trawl.year==unique.trawl.year[j]])) {
     g[[j]][[i]] = get_wrf(
-      unique.this.year[j], 
-      trawl.month[trawl.year==unique.this.year[j]][i], 
-      trawl.day[trawl.year==unique.this.year[j]][i])
+      unique.trawl.year[j], 
+      trawl.month[trawl.year==unique.trawl.year[j]][i], 
+      trawl.day[trawl.year==unique.trawl.year[j]][i])
     # get rid of points on land
     #if(exists("pip")==FALSE) pip = point.in.polygon(g$UTM$X, g$UTM$Y, pol.x = nepacUTM$X[nepacUTM$PID==1], pol.y = nepacUTM$Y[nepacUTM$PID==1])
     #g$UTM = g$UTM[pip==0 & g$UTM$X < 2200,]
