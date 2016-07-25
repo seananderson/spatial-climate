@@ -101,6 +101,12 @@ points(xy.ll$lon, xy.ll$lat, col = rgb(0, 0, xy.ll$sst, alpha=xy.ll$sst, maxColo
 
 ### Now we can try to match up temp interpolation for 2003 trawl data
 
+fid = open.nc("data-raw/terrain_d02.nc")
+fid_read <- read.nc(fid)
+# grid of all possible values
+xy.ll.pre <- data.frame("X"=c(fid_read$XLONG), "Y"=c(fid_read$XLAT))
+# print.nc(fid)
+
 get_wrf = function(this.year, this.month, this.day) {
   file.desc = paste0(this.year, "/", "wrfoutp_d02_",this.year,"-",this.month,"-",this.day,"_12:00:00")
   fileName <- paste0(base_url, file.desc)
@@ -111,20 +117,15 @@ get_wrf = function(this.year, this.month, this.day) {
   }
   
   # load with RNetCDF function
-  fid<-open.nc(localName)
-  dat<-read.nc(fid)
+  fid_local <- open.nc(localName)
+  dat<-read.nc(fid_local)
   dat$SST = as.data.frame(dat$SST) - 273.15 # convert to C
-  
-  fid = open.nc("data-raw/terrain_d02.nc")
-  print.nc(fid)
-  
-  # grid of all possible values
-  xy.ll <- data.frame("X"=c(read.nc(fid)$XLONG), "Y"=c(read.nc(fid)$XLAT))
   
   #crs <- CRS("+proj=lcc +lat_1=30 +lat_2=60 +lat_0=45.66558 +lon_0=-121 +datum=WGS84 +units=km")
   #p <- SpatialPoints(xy, proj4string=crs)
   #xy.ll <- as.data.frame(coordinates(spTransform(p, CRS("+proj=longlat +datum=WGS84"))))
   #names(xy.ll) = c("X", "Y")
+  xy.ll <- xy.ll.pre
   xy.ll$sst = c(as.matrix(dat$SST))
   xy.ll$PID = 1
   xy.ll$POS = seq(1,nrow(xy.ll))
@@ -157,12 +158,14 @@ sapply(unique.trawl.year, function(y) {
 # Cycle over unique year-month-day combinations
 g <- list()
 for(j in seq_along(unique.trawl.year)) {
+  this.year <- unique.trawl.year[j]
   g[[j]] <- list()
-  for(i in 1:length(trawl.month[trawl.year==unique.trawl.year[j]])) {
+  for(i in 1:length(trawl.month[trawl.year==this.year])) {
+    message(paste(this.year, i))
     g[[j]][[i]] = get_wrf(
-      unique.trawl.year[j], 
-      trawl.month[trawl.year==unique.trawl.year[j]][i], 
-      trawl.day[trawl.year==unique.trawl.year[j]][i])
+      this.year, 
+      trawl.month[trawl.year==this.year][i], 
+      trawl.day[trawl.year==this.year][i])
   }
 }
 
