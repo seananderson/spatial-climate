@@ -1,12 +1,16 @@
 library(dplyr)
 trawlDat <- readRDS("data-generated/trawl-with-uwcig-sst.rds")
-names(trawlDat)
+# trawlDat_orig <- readRDS("data-generated/rock-characteristics.rds")
+# trawlDat$sst_trawl <- trawlDat_orig$temperature_surface
 dir.create("figs", showWarnings = FALSE)
 
 # Look at pred vs obs -- pretty good fit
-dat <- trawlDat[trawlDat$year=="2003",] %>%
-  select(temperature_bottom, month, floor_depth, sst, X, Y, PID, POS, day) %>%
+dat <- trawlDat[trawlDat$year=="2012",] %>%
+# dat <- trawlDat %>%
+  select(temperature_bottom, year, month, floor_depth, sst, X, Y, 
+    PID, POS, day) %>%
   na.omit()
+
 predicted.bottom_temp = lm(log(temperature_bottom) ~ 
   (log(sst) + as.numeric(month) + I(as.numeric(month)^2) + 
     floor_depth + I(floor_depth^2))^2, 
