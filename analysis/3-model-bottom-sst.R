@@ -42,10 +42,10 @@ sapply(seq_len(5), function(i) plot(m_gbm2, i))
 dev.off()
 
 m_gam1 <- mgcv::gam(temperature_bottom ~ s(sst) + 
-  s(as.numeric(month), k = 4) + s(I(floor_depth/100)) + 
-    ti(I(X/1000)) + ti(I(Y/1000)) +
+  s(as.numeric(month), k = 4) + #s(I(floor_depth/100)) + 
+    ti(I(X)) + ti(I(Y)) +
     # te(I(X/1000),I(Y/1000)),
-    ti(I(X/1000),I(Y/1000)),
+    ti(I(X),I(Y)),
     # s(I(X/1000)) + s(I(Y/1000)),
   data = dat)
 
