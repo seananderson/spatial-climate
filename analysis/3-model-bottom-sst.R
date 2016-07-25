@@ -58,6 +58,21 @@ dat$temp_bottom_gam <- predict(m_gam1)
 AIC(m_gam1)
 summary(m_gam1)
 
+m_gamm1 <- mgcv::gamm(temperature_bottom ~ s(sst) + 
+  s(as.numeric(month), k = 4) + s(I(floor_depth/100)) + 
+    ti(I(X/1000)) + ti(I(Y/1000)) +
+    # te(I(X/1000),I(Y/1000)),
+    ti(I(X/1000),I(Y/1000)),
+    random=list(year=~1),
+    # s(I(X/1000)) + s(I(Y/1000)),
+  data = dat)
+pdf("figs/gamm-bottom.pdf", width = 6, height = 5)
+mgcv::gam.check(m_gamm1$gam)
+par(mfrow = c(2, 3))
+plot(m_gamm1)
+dev.off()
+dat$temp_bottom_gam <- predict(m_gamm1$gam)
+
 # m_gam1 <- gamclass::CVgam(log(temperature_bottom) ~ s(sst) + 
 #   s(as.numeric(month), k = 3) + s(floor_depth),
 #   data = dat)
