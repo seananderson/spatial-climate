@@ -165,16 +165,18 @@ for(j in seq_along(unique.trawl.year)) {
       trawl.day[trawl.year==unique.trawl.year[j]][i])
   }
 }
-  
-for(i in 1:length(trawl.month[trawl.year==this.year])) {
-  message(i)
-  predict.loc = which(trawlDat$year==2003 & 
-    trawlDat$month==trawl.month[trawl.year==this.year][i] & 
-    trawlDat$day==trawl.day[trawl.year==this.year][i])
-  
-  trawlDat$sst[predict.loc] = 
-    diag(interp(g[[i]]$UTM$X, g[[i]]$UTM$Y, g[[i]]$UTM$sst, 
-      xo = trawlDat$X[predict.loc], yo = trawlDat$Y[predict.loc])$z)
+
+for(j in seq_along(unique.trawl.year)) {
+  this.year <- unique.trawl.year[j]
+  for(i in 1:length(trawl.month[trawl.year==this.year])) {
+    message(paste(this.year, i))
+    predict.loc <- which(trawlDat$year==this.year & 
+      trawlDat$month==trawl.month[trawl.year==this.year][i] & 
+      trawlDat$day==trawl.day[trawl.year==this.year][i])
+    trawlDat$sst[predict.loc] <-
+      diag(interp(g[[j]][[i]]$UTM$X, g[[j]][[i]]$UTM$Y, g[[j]][[i]]$UTM$sst, 
+          xo = trawlDat$X[predict.loc], yo = trawlDat$Y[predict.loc])$z)
+  }
 }
 
 saveRDS(trawlDat, file = "data-generated/trawl-with-uwcig-sst.rds")
