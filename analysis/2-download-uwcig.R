@@ -106,7 +106,7 @@ get_wrf = function(this.year, this.month, this.day) {
   fileName <- paste0(base_url, file.desc)
   localName = paste0("data-raw/", "wrf/", file.desc)
   if (!file.exists(localName)) {
-    Sys.sleep(2)
+    Sys.sleep(1)
     download.file(url=fileName, destfile=localName)
   }
   
@@ -178,4 +178,3 @@ for(i in 1:length(trawl.month[trawl.year==this.year])) {
 }
 
 saveRDS(trawlDat, file = "data-generated/trawl-with-uwcig-sst.rds")
-
