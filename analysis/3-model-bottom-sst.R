@@ -124,3 +124,66 @@ p4 <- common +
 pdf("figs/bottom-temp-residuals.pdf", width = 11, height = 5)
 gridExtra::grid.arrange(p2, p1, p4, p3, nrow = 1)
 dev.off()
+
+##########
+
+# check variation in the future 
+
+download.file("http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/2060/wrfoutp_d02_2060-07-08_12:00:00", destfile = "data-raw/future.dat")
+
+get_temp <- function(file) {
+  fid_local <- open.nc(file)
+  data_future<-read.nc(fid_local)
+  data_future$SST = as.data.frame(data_future$SST) - 273.15 # convert to C
+fid = open.nc("data-raw/terrain_d02.nc")
+fid_read <- read.nc(fid)
+print.nc(fid)
+# grid of all possible values
+xy.ll.pre <- data.frame("X"=c(fid_read$XLONG), "Y"=c(fid_read$XLAT))
+# print.nc(fid)
+  xy.ll <- xy.ll.pre
+  xy.ll$sst = c(as.matrix(data_future$SST))
+  xy.ll$hgt = c(as.matrix(fid_read$HGT))
+  xy.ll$PID = 1
+  xy.ll$POS = seq(1,nrow(xy.ll))
+  attr(xy.ll, "zone") = 7
+  attr(xy.ll, "projection") = "LL"
+  xy.utm = convUL(xy.ll)  
+  invisible(xy.utm)
+}
+
+future <- get_temp("data-raw/future.dat")
+current <- get_temp("data-raw/wrf/2014/wrfoutp_d02_2014-07-08_12:00:00")
+future_current <- mutate(future, diff_sst = current$sst - sst)
+
+future <- filter(future, hgt < 10)
+current <- filter(current, hgt < 10)
+
+p1 <- 
+  ggplot(convUL(nepacLL), aes(X, Y, group = PID)) +
+  coord_equal() +
+  geom_point(data = future_current, aes(X, Y, colour = diff_sst)) +
+  scale_colour_gradient2(limits=c(-2.5, 1)) +
+  geom_polygon() +
+  coord_cartesian(xlim = xlim, ylim = ylim)
+print(p1)
+
+future$bot_pre <- predict(m_gam1, 
+  newdata = data.frame(select(future, X, Y, sst), month = "07", 
+    floor_depth = median(dat2$floor_depth)))
+current$bot_pre <- predict(m_gam1, 
+  newdata = data.frame(select(current, X, Y, sst), month = "07", 
+    floor_depth = median(dat2$floor_depth)))
+future_current <- mutate(future, diff_bot = current$bot_pre - bot_pre)
+
+p2 <- ggplot(convUL(nepacLL), aes(X, Y, group = PID)) +
+  coord_equal() +
+  geom_point(data = future_current, aes(X, Y, colour = diff_bot)) +
+  scale_colour_gradient2(limits=c(-2.5, 1)) +
+  geom_polygon() +
+  coord_cartesian(xlim = xlim, ylim = ylim)
+print(p2)
+pdf("figs/2060-diff.pdf", width = 7, height = 5)
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+dev.off()
+
