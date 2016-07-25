@@ -95,6 +95,8 @@ http://regclim.coas.oregonstate.edu/gccv/
 - More details: the print.nc() function is extremely valuable for these files. Key info: SST is presented in Kelvins, grid center + dimensions included, etc.
 - Also there's a few tools for visualizing these WRF output files ( netcdf format ): Panoply, http://www.giss.nasa.gov/tools/panoply/ or IDV (NCAR): http://www.unidata.ucar.edu/blogs/news/entry/idv-5-3
 
+Salathe (2010): http://www.atmos.washington.edu/~salathe/papers/published/Salathe_ClimChg_2010.pdf
+
 ## Other
 
 http://podaac.jpl.nasa.gov/dataset/JPL_OUROCEAN-L4UHfnd-GLOB-G1SST
