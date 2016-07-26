@@ -5,7 +5,8 @@
 # best result with Lambert Conformal Conic map centered on -120, 45.6 and Std Par 1 49.55 
 # Std Par 2 41.450, Height 13"
 
-base_url <- "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/"
+# base_url <- "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/"
+base_url <- "http://cses.washington.edu/rocinante/WRF/CCSM3_A1B/sfc_vars/"
 library(RNetCDF)
 library(dplyr)
 library(PBSmapping)
