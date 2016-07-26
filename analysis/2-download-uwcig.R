@@ -147,10 +147,14 @@ unique.trawl.year <- unique(trawl.year)
 sapply(unique.trawl.year, function(y) {
   oldwd <- getwd()
   setwd(paste0("data-raw/wrf/", y))
-  system(paste0(
+  system(
+    paste0(
       "wget --user-agent=Mozilla --no-directories ",
-      "--wait=0.7 -O --accept='*12:00:00*' -r -l 1 ", 
-      "http://cses.washington.edu/rocinante/WRF/ECHAM5_A1B/sfc_vars/", y, "/"))
+      "--wait=0.7 --accept='*12:00:00*' -r -l 1 ", 
+      "--reject='*", y, "-01*,*", y, "-02*,*", y, "-03*,*", y, "-04*,*",
+      y, "-11*,*", y, "-12*' ",
+      base_url, y, "/")
+    )
   setwd(oldwd)
 })
 
