@@ -4,3 +4,5 @@ data-raw/*
 
 *.rds
 .Rproj.user
+
+marmap_coord_-130;25;-115;55_res_1.csv
