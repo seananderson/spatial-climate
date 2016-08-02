@@ -194,7 +194,7 @@ sapply(2015:2069, function(y) {
   system(
     paste0(
       "wget --user-agent=Mozilla --no-directories ",
-      "--wait=0.7 --accept='*-01_12:00:00*' -r -l 1 ", 
+      "--wait=0.7 --accept='*-15t_12:00:00*' -r -l 1 ", 
       "--reject='*", y, "-01*,*", y, "-02*,*", y, "-03*,*", y, "-04*,*",
       y, "-11*,*", y, "-12*' ",
       base_url, y, "/")
