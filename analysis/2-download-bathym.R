@@ -9,7 +9,7 @@ bath <- marmap::getNOAA.bathy(
 saveRDS(bath, file = "data-generated/noaa-bathymetry.rds")
 
 bath2 <- marmap::readGEBCO.bathy(
-  file = "data-raw/gebco/GEBCO_2014_2D_-130.0_25.0_-115.0_55.0.nc", 
+  file = "data-raw/gebco/GEBCO_2014_2D_-136.0_36.0_-105.0_54.0.nc", 
   resolution = 1)
 saveRDS(bath2, file = "data-generated/gebco-bathymetry.rds")
 
