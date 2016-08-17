@@ -35,3 +35,13 @@ sum(is.na(rock_characteristics$temperature_bottom)) %>% message
 
 saveRDS(rock_characteristics, file = file.path("data-generated",
     "rock-characteristics.rds"))
+
+trawl <- rock_characteristics %>% 
+  select(-starts_with("sebas"), -cancer_magister) %>% 
+  rename(latitude = haul_latitude_decimal_degrees,
+    longitude = haul_longitude_decimal_degrees) %>% 
+  as.data.frame()
+
+saveRDS(trawl, "data-generated/trawl.rds")
+
+readr::write_csv(trawl, path = "data-generated/trawl.csv")
